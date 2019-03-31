@@ -65,5 +65,7 @@ set foldlevelstart=99
 set encoding=utf-8
 " del
 map D :"_d
+" delete
+set backspace=indent,eol,start
 " no swp file
 set noswapfile
