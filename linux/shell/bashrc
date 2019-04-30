@@ -1,0 +1,11 @@
+# colors
+GREEN="\[$(tput setaf 2)\]"
+BLUE="\[$(tput setaf 4)\]"
+RED="\[$(tput setaf 1)\]"
+GRAY="\[$(tput setaf 0)\]"
+PINK="\[$(tput setaf 5)\]"
+YELLOW="\[$(tput setaf 3)\]"
+RESET="\[$(tput sgr0)\]"
+export PS1="${YELLOW}[\t]${RED}[\u@\h \w]\n${BLUE}$(git_branch)${RESET} > "
+
+
