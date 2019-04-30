@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # colors
 GREEN="$(tput setaf 2)"
 BLUE="$(tput setaf 4)"
@@ -8,7 +10,8 @@ YELLOW="$(tput setaf 3)"
 RESET="$(tput sgr0)"
 
 # env
-REPO_PATH=$(PWD)/../../
+SCRIPT_DIR=$(dirname $(realpath "$BASH_SOURCE"))
+REPO_PATH=$SCRIPT_DIR/../../../../
 
 ####################################### GIT START ###################################
 
@@ -28,7 +31,7 @@ git_branch() {
 
 ####################################### PS1 START ###################################
 export_ps1() {
-  PS1='${YELLOW}[\t]${RED}[\u@\h \w]\n${BLUE}$(git_branch)${RESET} > '
+  PS1='${YELLOW}[\t]${RED}[\u@\h \w]${BLUE}$(git_branch)${RESET}\n> '
 }
 ####################################### PS1 END #####################################
 
@@ -36,24 +39,48 @@ init_vim() {
   if ! [[ -d ~/.vim/bundle/Vundle.vim ]]; then
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
   fi
-  local source_vim_cmd="source $REPO_PATH/repo/Snippers/linux/vim/.vimrc"
+  local source_vim_cmd="source $REPO_PATH/repo/Snippets/linux/vim/.vimrc"
   if ! [[ -f $HOME/.vimrc ]] || ! [[ $(grep "$source_vim_cmd" $HOME/.vimrc) ]]; then
     echo "$source_vim_cmd" >> $HOME/.vimrc
+  fi
+  if ! [[ -f $HOME/.vim/INIT_SUCCESS ]]; then 
+    # install plugins. 
+    vim +PluginInstall +qall
+    # install youcompleteme
+    python3 $HOME/.vim/bundle/YouCompleteMe/install.py --clang-completer
+    touch $HOME/.vim/INIT_SUCCESS
   fi
 }
 init_tmux() {
   if ! [[ -d ~/.tmux/plugins/tpm ]]; then
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   fi
-  local source_tmux_cmd="source $REPO_PATH/repo/Snippers/linux/tmux/.tmux.conf"
+  local source_tmux_cmd="source $REPO_PATH/repo/Snippets/linux/tmux/.tmux.conf"
   if ! [[ -f $HOME/.tmux.conf ]] || ! [[ $(grep "$source_tmux_cmd" $HOME/.tmux.conf) ]]; then
     echo "$source_tmux_cmd" >> $HOME/.tmux.conf
   fi
+  if ! [[ -f $HOME/.tmux/INIT_SUCCESS ]]; then 
+    # Press prefix + I (capital i, as in Install) to fetch the plugin.
+    tmux source $HOME/.tmux.conf
+    $HOME/.tmux/plugins/tpm/scripts/install_plugins.sh
+    touch $HOME/.tmux/INIT_SUCCESS
+  fi
+}
+init_bashrc() {
+  local source_bash_cmd="source $REPO_PATH/repo/Snippets/linux/shell/bashrc"
+  if ! [[ -f $HOME/.bashrc ]] || ! [[ $(grep "$source_bash_cmd" $HOME/.bashrc) ]]; then
+    echo "$source_bash_cmd" >> $HOME/.bashrc
+  fi
+}
+init_git() {
+  git config --global core.editor "vim"
 }
 initialize() {
   export_ps1
+  init_git
   init_vim
   init_tmux
+  init_bashrc
 }
 
 ####################################### Do ##########################################
