@@ -7,6 +7,9 @@ PINK="$(tput setaf 5)"
 YELLOW="$(tput setaf 3)"
 RESET="$(tput sgr0)"
 
+# env
+REPO_PATH=$(PWD)/../../
+
 ####################################### GIT START ###################################
 
 GIT_LOG_FORMAT='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(blue)<%an> %C(magenta)[%ae]%Creset'
@@ -29,9 +32,28 @@ export_ps1() {
 }
 ####################################### PS1 END #####################################
 
-
+init_vim() {
+  if ! [[ -d ~/.vim/bundle/Vundle.vim ]]; then
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+  fi
+  local source_vim_cmd="source $REPO_PATH/repo/Snippers/linux/vim/.vimrc"
+  if ! [[ -f $HOME/.vimrc ]] || ! [[ $(grep "$source_vim_cmd" $HOME/.vimrc) ]]; then
+    echo "$source_vim_cmd" >> $HOME/.vimrc
+  fi
+}
+init_tmux() {
+  if ! [[ -d ~/.tmux/plugins/tpm ]]; then
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  fi
+  local source_tmux_cmd="source $REPO_PATH/repo/Snippers/linux/tmux/.tmux.conf"
+  if ! [[ -f $HOME/.tmux.conf ]] || ! [[ $(grep "$source_tmux_cmd" $HOME/.tmux.conf) ]]; then
+    echo "$source_tmux_cmd" >> $HOME/.tmux.conf
+  fi
+}
 initialize() {
   export_ps1
+  init_vim
+  init_tmux
 }
 
 ####################################### Do ##########################################
