@@ -1,11 +1,39 @@
 # colors
-GREEN="\[$(tput setaf 2)\]"
-BLUE="\[$(tput setaf 4)\]"
-RED="\[$(tput setaf 1)\]"
-GRAY="\[$(tput setaf 0)\]"
-PINK="\[$(tput setaf 5)\]"
-YELLOW="\[$(tput setaf 3)\]"
-RESET="\[$(tput sgr0)\]"
-export PS1="${YELLOW}[\t]${RED}[\u@\h \w]\n${BLUE}$(git_branch)${RESET} > "
+GREEN="$(tput setaf 2)"
+BLUE="$(tput setaf 4)"
+RED="$(tput setaf 1)"
+GRAY="$(tput setaf 0)"
+PINK="$(tput setaf 5)"
+YELLOW="$(tput setaf 3)"
+RESET="$(tput sgr0)"
+
+####################################### GIT START ###################################
+
+GIT_LOG_FORMAT='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(blue)<%an> %C(magenta)[%ae]%Creset'
+git_graph() {
+  local format=$GIT_LOG_FORMAT
+  if [[ $# -eq 0 ]]; then
+    set -- --all
+  fi
+  git log --color --graph --abbrev-commit --pretty=format:"$format" "$@"
+}
+git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+####################################### GIT END #####################################
+
+####################################### PS1 START ###################################
+export_ps1() {
+  PS1='${YELLOW}[\t]${RED}[\u@\h \w]\n${BLUE}$(git_branch)${RESET} > '
+}
+####################################### PS1 END #####################################
 
 
+initialize() {
+  export_ps1
+}
+
+####################################### Do ##########################################
+initialize
+####################################### Done ########################################
